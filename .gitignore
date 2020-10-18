@@ -1,0 +1,9 @@
+*.a
+*.dylib
+*.o
+*.pyc
+*~
+.DS_Store
+.env
+workspace
+.vscode
