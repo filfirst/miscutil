@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 show_usage() {
-    echo 'Usage: upgrade_py_pkg [-u|-g]'
+    echo 'Usage: upgrade_py_pkg [-u|-l|-g]'
 }
 
 
@@ -29,6 +29,15 @@ upgrade_user_package() {
 }
 
 
+upgrade_local_package() {
+    echo "Upgrade $(which python3) local packages..."
+    rm -rf "$cache_path"
+    python3 -m pip list --local | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade --use-feature=2020-resolver
+    rm -rf "$cache_path"
+    echo "Upgrade $(which python3) local packages...DONE"
+}
+
+
 upgrade_global_package() {
     echo "Upgrade $(which python3) global packages..."
     rm -rf "$cache_path"
@@ -40,6 +49,8 @@ upgrade_global_package() {
 
 if [ -z "$1" ] || [ "$1" = "-u" ]; then
     upgrade_user_package
+elif [ "$1" = "-l" ]; then
+    upgrade_local_package
 elif [ "$1" = "-g" ]; then
     upgrade_global_package
 else
