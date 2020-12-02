@@ -23,7 +23,7 @@ fi
 upgrade_user_package() {
     echo "Upgrade $(which python3) user packages..."
     rm -rf "$cache_path"
-    python3 -m pip list --user | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade --user --use-feature=2020-resolver
+    python3 -m pip list --user | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade --user
     rm -rf "$cache_path"
     echo "Upgrade $(which python3) user packages...DONE"
 }
@@ -32,7 +32,7 @@ upgrade_user_package() {
 upgrade_local_package() {
     echo "Upgrade $(which python3) local packages..."
     rm -rf "$cache_path"
-    python3 -m pip list --local | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade --use-feature=2020-resolver
+    python3 -m pip list --local | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade
     rm -rf "$cache_path"
     echo "Upgrade $(which python3) local packages...DONE"
 }
@@ -41,7 +41,7 @@ upgrade_local_package() {
 upgrade_global_package() {
     echo "Upgrade $(which python3) global packages..."
     rm -rf "$cache_path"
-    python3 -m pip list | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade --use-feature=2020-resolver
+    python3 -m pip list | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade
     rm -rf "$cache_path"
     echo "Upgrade $(which python3) global packages...DONE"
 }
