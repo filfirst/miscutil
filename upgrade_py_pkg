@@ -36,6 +36,12 @@ upgrade_user_package() {
 
 
 upgrade_local_package() {
+    echo "Upgrade $(which python3) pip setuptools wheel..."
+    rm -rf "$cache_path"
+    python3 -m pip install --upgrade pip setuptools wheel
+    echo "Upgrade $(which python3) pip setuptools wheel...DONE"
+    echo
+
     echo "Upgrade $(which python3) local packages..."
     rm -rf "$cache_path"
     python3 -m pip list --local | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade
@@ -45,6 +51,12 @@ upgrade_local_package() {
 
 
 upgrade_global_package() {
+    echo "Upgrade $(which python3) pip setuptools wheel..."
+    rm -rf "$cache_path"
+    python3 -m pip install --upgrade pip setuptools wheel
+    echo "Upgrade $(which python3) pip setuptools wheel...DONE"
+    echo
+
     echo "Upgrade $(which python3) global packages..."
     rm -rf "$cache_path"
     python3 -m pip list | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade
