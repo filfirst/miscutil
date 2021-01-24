@@ -10,57 +10,39 @@ if [ $# -gt 1 ]; then
     exit -1
 fi
 
-if [ "$(uname)" = "Darwin" ]; then
-    cache_path="$HOME/Library/Caches/pip"
-elif [ "$(uname)" = "Linux" ]; then
-    cache_path="$HOME/.cache/pip"
-else
-    echo "Unsupported OS"
-    exit -2
-fi
-
 
 upgrade_user_package() {
     echo "Upgrade $(which python3) USER pip setuptools wheel..."
-    rm -rf "$cache_path"
     python3 -m pip install --upgrade --user pip setuptools wheel
     echo "Upgrade $(which python3) USER pip setuptools wheel...DONE"
     echo
 
     echo "Upgrade $(which python3) USER packages..."
-    rm -rf "$cache_path"
     python3 -m pip list --user | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade --user
-    rm -rf "$cache_path"
     echo "Upgrade $(which python3) USER packages...DONE"
 }
 
 
 upgrade_local_package() {
     echo "Upgrade $(which python3) LOCAL pip setuptools wheel..."
-    rm -rf "$cache_path"
     python3 -m pip install --upgrade pip setuptools wheel
     echo "Upgrade $(which python3) LOCAL pip setuptools wheel...DONE"
     echo
 
     echo "Upgrade $(which python3) LOCAL packages..."
-    rm -rf "$cache_path"
     python3 -m pip list --local | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade
-    rm -rf "$cache_path"
     echo "Upgrade $(which python3) LOCAL packages...DONE"
 }
 
 
 upgrade_global_package() {
     echo "Upgrade $(which python3) GLOBAL pip setuptools wheel..."
-    rm -rf "$cache_path"
     python3 -m pip install --upgrade pip setuptools wheel
     echo "Upgrade $(which python3) GLOBAL pip setuptools wheel...DONE"
     echo
 
     echo "Upgrade $(which python3) GLOBAL packages..."
-    rm -rf "$cache_path"
     python3 -m pip list | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade
-    rm -rf "$cache_path"
     echo "Upgrade $(which python3) GLOBAL packages...DONE"
 }
 
