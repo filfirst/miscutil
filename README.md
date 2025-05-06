@@ -1,38 +1,5 @@
 # A Utility Collection
 
-```graphviz
-digraph g {
-    graph [compound=true];
-    subgraph cluster0 {
-        node [style=filled,color=white];
-        style=filled;
-        color=lightgrey;
-        a0 -> a1 -> a2 -> a3;
-        label="process #1";
-    }
-
-    subgraph cluster1 {
-        node [style=filled];
-        edge [dir=none]
-        b0 -> b1 -> b2 -> b3;
-        label="process #2";
-        color=blue;
-    }
-
-    start -> a0 [lhead=cluster0];
-    start -> b0 [lhead=cluster1];
-    a1 -> b3;
-    b2 -> a3;
-    a3 -> a0;
-    a3 -> end [ltail=cluster0];
-    b3 -> end [ltail=cluster1];
-
-    start [shape=Mdiamond];
-    end [shape=Msquare];
-}
-
-```
-
 ```mermaid
 flowchart LR
     subgraph F[Flow]
