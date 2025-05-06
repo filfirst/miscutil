@@ -1,60 +1,125 @@
 #!/usr/bin/env bash
 
-show_usage() {
-    echo 'Usage: upgrade_py_pkg [-u|-l|-g]'
+ftk_show_usage() {
+    echo 'Usage: upgrade_py_pkg [--user|--local|--global] [--python PYTHON_BIN]'
 }
 
 
-if [ $# -gt 1 ]; then
-    show_usage
-    exit -1
+ftk_upgrade_user_package() {
+    local python_bin=${1}
+
+    echo "Upgrade $(which ${python_bin}) USER pip setuptools wheel..."
+    local cmd="${python_bin} -m pip install --upgrade --user pip setuptools wheel"
+    echo ${cmd}
+    eval ${cmd}
+    echo "Upgrade $(which ${python_bin}) USER pip setuptools wheel...DONE"
+    echo
+
+    echo "Upgrade $(which ${python_bin}) USER packages..."
+    cmd="${python_bin} -m pip list --user | sed 1,2d | cut -d ' ' -f 1 | xargs ${python_bin} -m pip install --upgrade --user"
+    echo ${cmd}
+    eval ${cmd}
+    echo "Upgrade $(which ${python_bin}) USER packages...DONE"
+}
+
+
+ftk_upgrade_local_package() {
+    local python_bin=${1}
+
+    echo "Upgrade $(which ${python_bin}) LOCAL pip setuptools wheel..."
+    local cmd="${python_bin} -m pip install --upgrade pip setuptools wheel"
+    echo ${cmd}
+    eval ${cmd}
+    echo "Upgrade $(which ${python_bin}) LOCAL pip setuptools wheel...DONE"
+    echo
+
+    echo "Upgrade $(which ${python_bin}) LOCAL packages..."
+    cmd="${python_bin} -m pip list --local | sed 1,2d | cut -d ' ' -f 1 | xargs ${python_bin} -m pip install --upgrade"
+    echo ${cmd}
+    eval ${cmd}
+    echo "Upgrade $(which ${python_bin}) LOCAL packages...DONE"
+}
+
+
+ftk_upgrade_global_package() {
+    local python_bin=${1}
+
+    echo "Upgrade $(which ${python_bin}) GLOBAL pip setuptools wheel..."
+    local cmd="${python_bin} -m pip install --upgrade pip setuptools wheel"
+    echo ${cmd}
+    eval ${cmd}
+    echo "Upgrade $(which ${python_bin}) GLOBAL pip setuptools wheel...DONE"
+    echo
+
+    echo "Upgrade $(which ${python_bin}) GLOBAL packages..."
+    cmd="${python_bin} -m pip list | sed 1,2d | cut -d ' ' -f 1 | xargs ${python_bin} -m pip install --upgrade"
+    echo ${cmd}
+    eval ${cmd}
+    echo "Upgrade $(which ${python_bin}) GLOBAL packages...DONE"
+}
+
+
+ftk_run() {
+    local site=${1}
+    local python_bin=${2}
+
+    case ${site} in
+    'user')
+        ftk_upgrade_user_package ${python_bin}
+        ;;
+    'local')
+        ftk_upgrade_local_package ${python_bin}
+        ;;
+    'global')
+        ftk_upgrade_global_package ${python_bin}
+        ;;
+    *)
+        ftk_show_usage
+        exit 1
+        ;;
+    esac
+}
+
+
+FTK_PYTHON_BIN='python3'
+FTK_SITE='user'
+
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+    --user)
+        FTK_SITE='user'
+        shift
+        ;;
+    --local)
+        FTK_SITE='local'
+        shift
+        ;;
+    --global)
+        FTK_SITE='global'
+        shift
+        ;;
+    --python)
+        if [[ ${2} =~ -.* ]] || ! [[ "$(command -v ${2})" ]]; then
+            ftk_show_usage
+            exit 1
+        fi
+        FTK_PYTHON_BIN=${2}
+        shift
+        shift
+        ;;
+    *|-*|--*)
+        ftk_show_usage
+        exit 1
+        ;;
+    esac
+done
+
+
+if [ "$(command -v brew)" ]; then
+    export CPATH=${CPATH}:$(brew --prefix)/include
+    export LIBRARY_PATH=${LIBRARY_PATH}:$(brew --prefix)/lib
 fi
 
 
-upgrade_user_package() {
-    echo "Upgrade $(which python3) USER pip setuptools wheel..."
-    python3 -m pip install --upgrade --user pip setuptools wheel
-    echo "Upgrade $(which python3) USER pip setuptools wheel...DONE"
-    echo
-
-    echo "Upgrade $(which python3) USER packages..."
-    python3 -m pip list --user | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade --user
-    echo "Upgrade $(which python3) USER packages...DONE"
-}
-
-
-upgrade_local_package() {
-    echo "Upgrade $(which python3) LOCAL pip setuptools wheel..."
-    python3 -m pip install --upgrade pip setuptools wheel
-    echo "Upgrade $(which python3) LOCAL pip setuptools wheel...DONE"
-    echo
-
-    echo "Upgrade $(which python3) LOCAL packages..."
-    python3 -m pip list --local | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade
-    echo "Upgrade $(which python3) LOCAL packages...DONE"
-}
-
-
-upgrade_global_package() {
-    echo "Upgrade $(which python3) GLOBAL pip setuptools wheel..."
-    python3 -m pip install --upgrade pip setuptools wheel
-    echo "Upgrade $(which python3) GLOBAL pip setuptools wheel...DONE"
-    echo
-
-    echo "Upgrade $(which python3) GLOBAL packages..."
-    python3 -m pip list | sed 1,2d | cut -d ' ' -f 1 | xargs python3 -m pip install --upgrade
-    echo "Upgrade $(which python3) GLOBAL packages...DONE"
-}
-
-
-if [ -z "$1" ] || [ "$1" = "-u" ]; then
-    upgrade_user_package
-elif [ "$1" = "-l" ]; then
-    upgrade_local_package
-elif [ "$1" = "-g" ]; then
-    upgrade_global_package
-else
-    echo "Unknown option: $1"
-    show_usage
-    exit -1
-fi
+ftk_run ${FTK_SITE} ${FTK_PYTHON_BIN}
